@@ -233,6 +233,7 @@ describe("uiMask", function () {
       input.triggerHandler("input");
       expect(input.data("$ngModelController").$error.required).toBe(true);
       input.val("(abc123_) _ _").triggerHandler("input");
+      timeout.flush();
       expect(scope.x).toBe("ab1");
       expect(input.data("$ngModelController").$error.required).toBeUndefined();
     });
@@ -373,14 +374,17 @@ describe("uiMask", function () {
 
       input.val("aa___").triggerHandler("input");
       input.triggerHandler("blur");
+      timeout.flush();
       expect(input.val()).toBe("aa_");
 
       input.val("99a___").triggerHandler("input");
       input.triggerHandler("blur");
+      timeout.flush();
       expect(input.val()).toBe("99_");
 
       input.val("992___").triggerHandler("input");
       input.triggerHandler("blur");
+      timeout.flush();
       expect(input.val()).toBe("992");
     });
 
@@ -642,6 +646,7 @@ describe("uiMask", function () {
       scope.$apply("mask = '@193'");
       input.val("f123____").triggerHandler("input");
       input.triggerHandler("blur");
+      timeout.flush();
       expect(input.val()).toBe("f123");
     });
 
@@ -659,6 +664,7 @@ describe("uiMask", function () {
       scope.$apply("mask = '@193Ab'");
       input.val("f123cCCc").triggerHandler("input");
       input.triggerHandler("blur");
+      timeout.flush();
       expect(input.val()).toBe("f123Cc");
     });
 

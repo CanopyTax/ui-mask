@@ -49,7 +49,7 @@ angular.module('ui.mask', [])
                 return tempOptions;
             }];
         })
-        .directive('uiMask', ['uiMask.Config', function(maskConfig) {
+        .directive('uiMask', ['uiMask.Config', '$timeout', function(maskConfig, $timeout) {
                 function isFocused (elem) {
                   return elem === document.activeElement && (!document.hasFocus || document.hasFocus()) && !!(elem.type || elem.href || ~elem.tabIndex);
                 }
@@ -444,12 +444,14 @@ angular.module('ui.mask', [])
                                     if (!isValid || value.length === 0) {
                                         valueMasked = '';
                                         iElement.val('');
-                                        scope.$apply(function() {
-                                            //only $setViewValue when not $pristine to avoid changing $pristine state.
-                                            if (!controller.$pristine) {
-                                                controller.$setViewValue('');
-                                            }
-                                        });
+                                        $timeout(function() {
+                                            scope.$apply(function() {
+                                                //only $setViewValue when not $pristine to avoid changing $pristine state.
+                                                if (!controller.$pristine) {
+                                                    controller.$setViewValue('');
+                                                }
+                                            });
+                                        }, null, false);
                                     }
                                 }
                                 //Check for different value and trigger change.
@@ -597,9 +599,11 @@ angular.module('ui.mask', [])
                                     iElement.val(maskPlaceholder);
                                     // This shouldn't be needed but for some reason after aggressive backspacing the controller $viewValue is incorrect.
                                     // This keeps the $viewValue updated and correct.
-                                    scope.$apply(function () {
-                                        controller.$setViewValue(''); // $setViewValue should be run in angular context, otherwise the changes will be invisible to angular and user code.
-                                    });
+                                    $timeout(function() {
+                                        scope.$apply(function () {
+                                            controller.$setViewValue(''); // $setViewValue should be run in angular context, otherwise the changes will be invisible to angular and user code.
+                                        });
+                                    }, null, false);
                                     setCaretPosition(this, caretPosOld);
                                     return;
                                 }
@@ -640,9 +644,11 @@ angular.module('ui.mask', [])
                                 //we need this check.  What could happen if you don't have it is that you'll set the model value without the user
                                 //actually doing anything.  Meaning, things like pristine and touched will be set.
                                 if (valAltered) {
-                                    scope.$apply(function () {
-                                        controller.$setViewValue(valMasked); // $setViewValue should be run in angular context, otherwise the changes will be invisible to angular and user code.
-                                    });
+                                    $timeout(function() {
+                                        scope.$apply(function () {
+                                            controller.$setViewValue(valMasked); // $setViewValue should be run in angular context, otherwise the changes will be invisible to angular and user code.
+                                        });
+                                    }, null, false);
                                 }
 
                                 // Caret Repositioning
